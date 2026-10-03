@@ -38,8 +38,11 @@ expected, since the snippet overrides the shield's console defaults.
 - Battery level is shown at power-on (and so on wake, since waking from deep
   sleep restarts the board) and when `&kbat` is pressed (tap Program): one LED per 25%, or five
   blinks of the caps LED at 10% or below.
-- Switching Bluetooth profile or turning on a layer briefly lights LED N for
-  profile/layer N (all four for 5 and up).
+- Bluetooth profile N (all four LEDs for profile 5): on switching profile, and
+  whenever the active profile connects or disconnects, LED N lights solid if
+  connected, or blinks three times if not connected yet.
+- Turning on layer N gives a quick flash of LED N (all four for layer 5 and
+  up), then the LEDs return to their previous state.
 
 
 To restore original Adafruit firmware download from:

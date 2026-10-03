@@ -21,6 +21,7 @@
 #include <dt-bindings/zmk/hid_indicators.h>
 
 #include <zmk/battery.h>
+#include <zmk/ble.h>
 #include <zmk/event_manager.h>
 #include <zmk/events/ble_active_profile_changed.h>
 #include <zmk/events/hid_indicators_changed.h>
@@ -45,11 +46,12 @@ static const struct gpio_dt_spec leds[LED_COUNT] = {
  */
 static bool lock_state[LED_COUNT];
 
-enum led_cmd { CMD_SHOW_BATTERY, CMD_SHOW_VALUE, CMD_SET_INDICATORS };
+enum led_cmd { CMD_SHOW_BATTERY, CMD_SHOW_PROFILE, CMD_FLASH_LAYER, CMD_SET_INDICATORS };
 
 struct led_msg {
     uint8_t cmd;
     uint8_t arg;
+    bool flag;
 };
 
 K_MSGQ_DEFINE(led_msgq, sizeof(struct led_msg), 8, 1);
@@ -65,9 +67,14 @@ K_MSGQ_DEFINE(led_msgq, sizeof(struct led_msg), 8, 1);
 /* Give the battery driver time to take its first sample before the boot readout. */
 #define BATTERY_BOOT_DELAY_MS 1500
 
-/* Profile / layer readout timing */
-#define VALUE_GAP_MS 300
-#define VALUE_HOLD_MS 300
+/* Profile readout timing: solid when connected, blinking while not connected */
+#define PROFILE_GAP_MS 150
+#define PROFILE_HOLD_MS 600
+#define PROFILE_BLINK_MS 150
+#define PROFILE_BLINKS 3
+
+/* Layer flash: briefly invert the layer's LED, then restore */
+#define LAYER_FLASH_MS 120
 
 /* Set while a battery readout is queued or playing, so repeat requests are dropped. */
 static atomic_t battery_busy;
@@ -116,25 +123,60 @@ static void show_battery(void) {
     restore_lock_states();
 }
 
-/* Show a 1-based profile or layer number: LEDs 1-4 for 1-4, all four for 5 and up. */
-static void show_value(uint8_t value) {
-    all_off();
-    k_msleep(VALUE_GAP_MS);
+/* LEDs for a 1-based profile or layer number: LED N for 1-4, all four for 5 and up. */
+static uint8_t number_mask(uint8_t number) {
+    if (number == 0) {
+        return 0;
+    }
+    if (number > LED_COUNT) {
+        return BIT_MASK(LED_COUNT);
+    }
+    return BIT(number - 1);
+}
 
-    if (value >= 1 && value <= LED_COUNT) {
-        set_led(value - 1, true);
-    } else if (value > LED_COUNT) {
-        for (int i = 0; i < LED_COUNT; i++) {
-            set_led(i, true);
+static void set_mask(uint8_t mask, bool on) {
+    for (int i = 0; i < LED_COUNT; i++) {
+        if (mask & BIT(i)) {
+            set_led(i, on);
+        }
+    }
+}
+
+static void show_profile(uint8_t number, bool connected) {
+    uint8_t mask = number_mask(number);
+
+    all_off();
+    k_msleep(PROFILE_GAP_MS);
+
+    if (connected) {
+        set_mask(mask, true);
+        k_msleep(PROFILE_HOLD_MS);
+    } else {
+        for (int i = 0; i < PROFILE_BLINKS; i++) {
+            set_mask(mask, true);
+            k_msleep(PROFILE_BLINK_MS);
+            set_mask(mask, false);
+            k_msleep(PROFILE_BLINK_MS);
         }
     }
 
-    k_msleep(VALUE_HOLD_MS);
     restore_lock_states();
 }
 
-static void post(enum led_cmd cmd, uint8_t arg) {
-    struct led_msg msg = {.cmd = cmd, .arg = arg};
+static void flash_layer(uint8_t number) {
+    uint8_t mask = number_mask(number);
+
+    for (int i = 0; i < LED_COUNT; i++) {
+        if (mask & BIT(i)) {
+            set_led(i, !lock_state[i]);
+        }
+    }
+    k_msleep(LAYER_FLASH_MS);
+    restore_lock_states();
+}
+
+static void post(enum led_cmd cmd, uint8_t arg, bool flag) {
+    struct led_msg msg = {.cmd = cmd, .arg = arg, .flag = flag};
 
     if (k_msgq_put(&led_msgq, &msg, K_NO_WAIT) != 0) {
         LOG_WRN("LED queue full, dropping command %d", cmd);
@@ -146,7 +188,7 @@ static void post(enum led_cmd cmd, uint8_t arg) {
 
 void kinesis_leds_show_battery(void) {
     if (atomic_cas(&battery_busy, 0, 1)) {
-        post(CMD_SHOW_BATTERY, 0);
+        post(CMD_SHOW_BATTERY, 0, false);
     }
 }
 
@@ -183,8 +225,11 @@ static void led_thread(void *p1, void *p2, void *p3) {
             }
             atomic_clear(&battery_busy);
             break;
-        case CMD_SHOW_VALUE:
-            show_value(msg.arg);
+        case CMD_SHOW_PROFILE:
+            show_profile(msg.arg, msg.flag);
+            break;
+        case CMD_FLASH_LAYER:
+            flash_layer(msg.arg);
             break;
         case CMD_SET_INDICATORS:
             lock_state[LED_CAP] = msg.arg & HID_INDICATOR_CAPS_LOCK;
@@ -203,19 +248,20 @@ static int kinesis_leds_listener(const zmk_event_t *eh) {
     /* Raised when the active host sends new lock states, and on endpoint/profile switches. */
     const struct zmk_hid_indicators_changed *ind_ev = as_zmk_hid_indicators_changed(eh);
     if (ind_ev != NULL) {
-        post(CMD_SET_INDICATORS, ind_ev->indicators);
+        post(CMD_SET_INDICATORS, ind_ev->indicators, false);
         return ZMK_EV_EVENT_BUBBLE;
     }
 
     const struct zmk_ble_active_profile_changed *ble_ev = as_zmk_ble_active_profile_changed(eh);
     if (ble_ev != NULL) {
-        post(CMD_SHOW_VALUE, ble_ev->index + 1);
+        /* Also raised when the active profile connects or disconnects. */
+        post(CMD_SHOW_PROFILE, ble_ev->index + 1, zmk_ble_active_profile_is_connected());
         return ZMK_EV_EVENT_BUBBLE;
     }
 
     const struct zmk_layer_state_changed *layer_ev = as_zmk_layer_state_changed(eh);
     if (layer_ev != NULL && layer_ev->state) {
-        post(CMD_SHOW_VALUE, layer_ev->layer + 1);
+        post(CMD_FLASH_LAYER, layer_ev->layer + 1, false);
     }
 
     return ZMK_EV_EVENT_BUBBLE;
