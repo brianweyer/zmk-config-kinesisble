@@ -31,6 +31,16 @@ Enter the bootloader (on my layout: hold **Program**, release, then press **F10*
 or double-tap the Feather's reset button), then copy the `.uf2` onto the
 `FTHR840BOOT` drive. Bluetooth pairings survive reflashing.
 
+## Remapping with ZMK Studio
+
+Open [zmk.studio](https://zmk.studio) in Chrome or Edge and connect over USB or
+Bluetooth. Before Studio can change anything, unlock the keyboard by pressing
+`&studio_unlock` (on my layout: hold **Program**, release, then press **F12**).
+
+Changes made in Studio are saved on the keyboard and override the keymap file
+until you use Studio's "Restore Stock Settings", so commit any layout you want
+to keep back into `config/kinesisble.keymap`.
+
 ## Updating ZMK
 
 Change the `revision` in `config/west.yml` and the `@<ref>` in

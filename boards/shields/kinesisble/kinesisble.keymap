@@ -47,6 +47,7 @@ combo_##NAME { \
 
         // default layer matches printing on keyboard
         default_layer {
+            display-name = "Default";
             bindings = <
             &kp ESC   &kp F1    &kp F2   &kp F3    &kp F4    &kp F5    &kp F6   &kp F7   &kp F8
             &kp F9   &kp F10  &kp F11   &kp F12  &kp PSCRN &kp SLCK  &kp PAUSE_BREAK &tog KEYPAD &prog_key ADJUSTMENT 0
@@ -61,6 +62,7 @@ combo_##NAME { \
             >;
         };
         mac_layer {
+            display-name = "Mac";
             bindings = <
             &trans &trans  &trans  &trans  &trans  &trans &trans &trans &trans  &trans &trans &trans  &trans &trans &trans &trans &trans &trans
             &trans  &trans  &trans  &trans  &trans  &trans                                      &trans  &trans  &trans  &trans  &trans  &trans
@@ -74,6 +76,7 @@ combo_##NAME { \
             >;
         };
         windows_layer {
+            display-name = "Windows";
             bindings = <
             &trans &trans  &trans  &trans  &trans  &trans &trans &trans &trans  &trans &trans &trans  &trans &trans &trans &trans &trans &trans
             &trans  &trans  &trans  &trans  &trans  &trans                                      &trans  &trans  &trans  &trans  &trans  &trans
@@ -87,6 +90,7 @@ combo_##NAME { \
             >;
         };
         pc_layer {
+            display-name = "PC";
             bindings = <
             &trans &trans  &trans  &trans  &trans  &trans &trans &trans &trans  &trans &trans &trans  &trans &trans &trans &trans &trans &trans
             &trans  &trans  &trans  &trans  &trans  &trans                                      &trans  &trans  &trans  &trans  &trans  &trans
@@ -100,6 +104,7 @@ combo_##NAME { \
             >;
         };
         keypad_layer {
+            display-name = "Keypad";
             bindings = <
             &trans &trans  &trans  &trans  &trans  &trans &trans &trans &trans  &trans &trans &trans  &trans &trans &trans &trans &tog KEYPAD &none
             &none       &none        &none         &none        &none        &none        &none     &kp KP_NUM  &kp EQUAL &kp KP_SLASH  &kp KP_MULTIPLY &none
@@ -113,8 +118,9 @@ combo_##NAME { \
             >;
         };
         adjustment_layer {
+            display-name = "Adjust";
             bindings = <
-            &bt BT_CLR &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4 &none &none &none  &none &bootloader &sys_reset  &none &none &none &none &none &tog ADJUSTMENT
+            &bt BT_CLR &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4 &none &none &none  &none &bootloader &sys_reset  &studio_unlock &none &none &none &none &tog ADJUSTMENT
             &none  &none  &none  &none  &none  &none                                      &none  &none  &none  &none  &none  &none
             &none  &none  &none  &none  &none  &none                                      &none  &none  &none  &none  &none  &none
             &none  &none  &none  &none  &none  &none                                      &none  &none  &none  &none  &none  &none

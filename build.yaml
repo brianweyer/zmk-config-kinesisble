@@ -4,11 +4,13 @@ include:
   # Personal layout (config/kinesisble.keymap)
   - board: adafruit_feather_nrf52840/nrf52840/uf2
     shield: kinesisble
+    snippet: studio-rpc-usb-uart
     artifact-name: kinesisble
 
   # Stock Kinesis Advantage 2 layout shipped with the shield
   - board: adafruit_feather_nrf52840/nrf52840/uf2
     shield: kinesisble
+    snippet: studio-rpc-usb-uart
     cmake-args: -DKEYMAP_FILE=${GITHUB_WORKSPACE}/boards/shields/kinesisble/kinesisble.keymap
     artifact-name: kinesisble-default
 

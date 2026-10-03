@@ -56,6 +56,7 @@
 #include <dt-bindings/zmk/matrix_transform.h>
 #include <common/nordic/nrf52840_uf2_boot_mode.dtsi>
 #include "kinesisble-pinctrl.dtsi"
+#include "kinesisble-layouts.dtsi"
 
 / {
     behaviors {
@@ -69,7 +70,7 @@
 
     chosen {
         zmk,kscan = &kscan0;
-        zmk,matrix_transform = &default_transform;
+        zmk,physical-layout = &physical_layout0;
         zmk,battery = &vbatt;
     };
 
@@ -245,4 +246,8 @@
  * zmk-usb-logging snippet adds its own. */
 &board_cdc_acm_uart {
     status = "disabled";
+};
+
+&physical_layout0 {
+    transform = <&default_transform>;
 };
