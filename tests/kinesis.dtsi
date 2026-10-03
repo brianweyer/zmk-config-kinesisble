@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2026 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+/*
+ * Shared setup for keymap tests: a 7x15 mock matrix driven through the real
+ * Advantage 2 matrix transform, so test events use the same RC(row, col)
+ * positions as the hardware.
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/kscan_mock.h>
+#include "../boards/shields/kinesisble/kinesisble-transform.dtsi"
+
+/ {
+    chosen {
+        zmk,matrix-transform = &default_transform;
+    };
+};
+
+/*
+ * &kbat needs the LED hardware, so in tests it is just another label for
+ * &none. (A separate zmk,behavior-none node would not work: that driver only
+ * supports one instance, and the real &none would lose it.)
+ */
+kbat: &none {};
+
+&kscan {
+    rows = <7>;
+    columns = <15>;
+};

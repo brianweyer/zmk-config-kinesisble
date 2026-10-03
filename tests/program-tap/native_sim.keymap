@@ -1,0 +1,5 @@
+#include "../kinesis.dtsi"
+#include "../../config/kinesisble.keymap"
+
+/* Tap Program (battery readout), then Q: only Q reaches the host (no F24) */
+&kscan { events = <ZMK_MOCK_PRESS(5,13,10) ZMK_MOCK_RELEASE(5,13,10) ZMK_MOCK_PRESS(1,1,10) ZMK_MOCK_RELEASE(1,1,10)>; };

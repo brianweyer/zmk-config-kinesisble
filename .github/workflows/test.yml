@@ -1,0 +1,24 @@
+name: Keymap tests
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      # Same image ZMK uses for its own tests at this version
+      image: docker.io/zmkfirmware/zmk-build-arm:4.1
+    steps:
+      - uses: actions/checkout@v6
+      - name: Fetch ZMK at the pinned revision (config/west.yml)
+        run: |
+          west init -l config
+          west update --fetch-opt=--filter=tree:0
+          west zephyr-export
+      - name: Run keymap tests
+        run: ZMK_SRC_DIR=zmk/app ZMK_BUILD_DIR=build zmk/app/run-test.sh tests
+      - name: Upload test logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-logs
+          path: build/tests/

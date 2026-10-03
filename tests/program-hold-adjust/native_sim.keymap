@@ -1,0 +1,11 @@
+#include "../kinesis.dtsi"
+#include "../../config/kinesisble.keymap"
+
+/* Hold Program past 500 ms: adjustment layer on, Q does nothing.
+ * Tap Program again: layer off, Q types q. Expect exactly one Q. */
+&kscan { events = <
+    ZMK_MOCK_PRESS(5,13,600) ZMK_MOCK_RELEASE(5,13,10)
+    ZMK_MOCK_PRESS(1,1,10) ZMK_MOCK_RELEASE(1,1,10)
+    ZMK_MOCK_PRESS(5,13,10) ZMK_MOCK_RELEASE(5,13,10)
+    ZMK_MOCK_PRESS(1,1,10) ZMK_MOCK_RELEASE(1,1,10)
+>; };

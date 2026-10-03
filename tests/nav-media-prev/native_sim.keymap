@@ -1,0 +1,5 @@
+#include "../kinesis.dtsi"
+#include "../../config/kinesisble.keymap"
+
+/* Hold the left thumb nav key and press M: consumer Previous Track */
+&kscan { events = <ZMK_MOCK_PRESS(6,5,10) ZMK_MOCK_PRESS(3,7,10) ZMK_MOCK_RELEASE(3,7,10) ZMK_MOCK_RELEASE(6,5,10)>; };

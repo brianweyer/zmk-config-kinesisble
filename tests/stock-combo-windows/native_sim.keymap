@@ -1,0 +1,10 @@
+#include "../kinesis.dtsi"
+#include "../../boards/shields/kinesisble/kinesisble.keymap"
+
+/* Stock layout: left thumb top-left is Cmd (LGUI) by default.
+ * Combo = + W switches to the Windows layer, where it becomes Ctrl. */
+&kscan { events = <
+    ZMK_MOCK_PRESS(6,5,10) ZMK_MOCK_RELEASE(6,5,10)
+    ZMK_MOCK_PRESS(0,0,5) ZMK_MOCK_PRESS(1,2,5) ZMK_MOCK_RELEASE(0,0,5) ZMK_MOCK_RELEASE(1,2,100)
+    ZMK_MOCK_PRESS(6,5,10) ZMK_MOCK_RELEASE(6,5,10)
+>; };
