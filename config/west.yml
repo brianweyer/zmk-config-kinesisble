@@ -1,0 +1,14 @@
+manifest:
+  remotes:
+    - name: zmkfirmware
+      url-base: https://github.com/zmkfirmware
+  projects:
+    - name: zmk
+      remote: zmkfirmware
+      # Pinned to the upstream main commit this config was tested against.
+      # ZMK v0.3 predates the Zephyr 4.1 move this shield needs, so a release
+      # tag can't be used until the next ZMK release.
+      revision: 5b51501fead672c41b5cfb396f3dafe0894bf4e9
+      import: app/west.yml
+  self:
+    path: config

@@ -1,0 +1,69 @@
+/*
+ * Copyright (c) 2022 The ZMK Contributors
+ * SPDX-License-Identifier: MIT
+ */
+
+&pinctrl {
+//   pwm0_default: pwm0_default {
+//       group1 {
+//           psels = <NRF_PSEL(PWM_OUT0, 0, 28)>;
+//           nordic,invert;
+//       };
+//       group2 {
+//           psels = <NRF_PSEL(PWM_OUT0, 0, 2)>;
+//           nordic,invert;
+//       };
+//       group3 {
+//           psels = <NRF_PSEL(PWM_OUT0, 0, 26)>;
+//           nordic,invert;
+//       };
+//       group4 {
+//           psels = <NRF_PSEL(PWM_OUT0, 0, 7)>;
+//           nordic,invert;
+//       };
+//       group5 {
+//           psels = <NRF_PSEL(PWM_OUT0, 0, 3)>;
+//           nordic,invert;
+//       };
+//   };
+
+//   pwm0_sleep: pwm0_sleep {
+//       group1 {
+//           psels = <NRF_PSEL(PWM_OUT0, 0, 28)>;
+//           low-power-enable;
+//       };
+//       group2 {
+//           psels = <NRF_PSEL(PWM_OUT0, 0, 2)>;
+//           low-power-enable;
+//       };
+//       group3 {
+//           psels = <NRF_PSEL(PWM_OUT0, 0, 26)>;
+//           low-power-enable;
+//       };
+//       group4 {
+//           psels = <NRF_PSEL(PWM_OUT0, 0, 7)>;
+//           low-power-enable;
+//       };
+//       group5 {
+//           psels = <NRF_PSEL(PWM_OUT0, 0, 3)>;
+//           low-power-enable;
+//       };
+//   };
+
+  spi1_default: spi1_default {
+  group1 {
+    psels = <NRF_PSEL(SPIM_SCK, 0, 14)>,
+      <NRF_PSEL(SPIM_MOSI, 0, 13)>,
+      <NRF_PSEL(SPIM_MISO, 0, 15)>;
+  };
+};
+
+spi1_sleep: spi1_sleep {
+  group1 {
+    psels = <NRF_PSEL(SPIM_SCK, 0, 14)>,
+      <NRF_PSEL(SPIM_MOSI, 0, 13)>,
+      <NRF_PSEL(SPIM_MISO, 0, 15)>;
+    low-power-enable;
+  };
+};
+};

@@ -1,0 +1,19 @@
+# GitHub Actions build matrix. See https://zmk.dev/docs/user-setup
+---
+include:
+  # Personal layout (config/kinesisble.keymap)
+  - board: adafruit_feather_nrf52840/nrf52840/uf2
+    shield: kinesisble
+    artifact-name: kinesisble
+
+  # Stock Kinesis Advantage 2 layout shipped with the shield
+  - board: adafruit_feather_nrf52840/nrf52840/uf2
+    shield: kinesisble
+    cmake-args: -DKEYMAP_FILE=${GITHUB_WORKSPACE}/boards/shields/kinesisble/kinesisble.keymap
+    artifact-name: kinesisble-default
+
+  # Personal layout with USB logging, for debugging only
+  - board: adafruit_feather_nrf52840/nrf52840/uf2
+    shield: kinesisble
+    snippet: zmk-usb-logging
+    artifact-name: kinesisble-debug
