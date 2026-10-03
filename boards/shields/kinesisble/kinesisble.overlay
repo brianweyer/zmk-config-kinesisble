@@ -132,6 +132,10 @@
     kscan0: kscan {
         compatible = "zmk,kscan-gpio-matrix";
         wakeup-source;
+        // Report presses after 1 ms (default 5) for lower latency; keep the
+        // 5 ms release debounce so a bouncing switch can't double-type.
+        debounce-press-ms = <1>;
+        debounce-release-ms = <5>;
 
         diode-direction = "col2row";
         row-gpios

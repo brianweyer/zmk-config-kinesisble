@@ -25,6 +25,20 @@ Every push builds three UF2 files in GitHub Actions. Download them from the run'
 - `kinesisble-default.uf2`: stock Advantage 2 layout
 - `kinesisble-debug.uf2`: personal layout with USB logging (debugging only)
 
+## Adjustment layer
+
+Hold **Program** (over half a second), then release, to toggle the adjustment
+layer; tap Program again to leave it.
+
+| Key | Action |
+|---|---|
+| Esc | Clear the current Bluetooth profile |
+| F1–F5 | Bluetooth profiles 1–5 |
+| F6 / F7 / F8 | Send to USB / Bluetooth / toggle between them |
+| F10 | Bootloader (for flashing) |
+| F11 | Reset |
+| F12 | Unlock ZMK Studio |
+
 ## Flashing
 
 Enter the bootloader (on my layout: hold **Program**, release, then press **F10**;
