@@ -7,15 +7,21 @@ config ZMK_KEYBOARD_NAME
     default "Advantage2 BLE"
 
 config ZMK_BLE
-	default y
+    default y
 
 config ZMK_USB
-	default y
+    default y
 
 config ZMK_BATTERY_VOLTAGE_DIVIDER
-	default y
+    default y
 
 config USB_DEVICE_MANUFACTURER
-	default "ZMK Project"
-    
+    default "ZMK Project"
+
+# The upstream Feather board has no ZMK variant; this shield sets up the
+# settings storage and Adafruit bootloader integration itself (see
+# kinesisble.conf and the boot-mode include in kinesisble.overlay).
+config ZMK_BOARD_COMPAT
+    default y
+
 endif
