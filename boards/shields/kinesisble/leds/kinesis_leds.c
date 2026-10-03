@@ -18,12 +18,14 @@
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/util.h>
 
+#include <dt-bindings/zmk/hid_indicators.h>
 #include <dt-bindings/zmk/hid_usage.h>
 #include <dt-bindings/zmk/hid_usage_pages.h>
 
 #include <zmk/battery.h>
 #include <zmk/event_manager.h>
 #include <zmk/events/ble_active_profile_changed.h>
+#include <zmk/events/hid_indicators_changed.h>
 #include <zmk/events/keycode_state_changed.h>
 #include <zmk/events/layer_state_changed.h>
 
@@ -38,10 +40,13 @@ static const struct gpio_dt_spec leds[LED_COUNT] = {
     [LED_KEY] = GPIO_DT_SPEC_GET(DT_NODELABEL(ledu4), gpios),
 };
 
-/* Lock LED states; only read or written by the LED thread. */
+/*
+ * Lock LED states as reported by the active host; only read or written by
+ * the LED thread. The KEY LED has no host indicator and stays off.
+ */
 static bool lock_state[LED_COUNT];
 
-enum led_cmd { CMD_SHOW_BATTERY, CMD_SHOW_VALUE, CMD_TOGGLE_LOCK };
+enum led_cmd { CMD_SHOW_BATTERY, CMD_SHOW_VALUE, CMD_SET_INDICATORS };
 
 struct led_msg {
     uint8_t cmd;
@@ -182,9 +187,11 @@ static void led_thread(void *p1, void *p2, void *p3) {
         case CMD_SHOW_VALUE:
             show_value(msg.arg);
             break;
-        case CMD_TOGGLE_LOCK:
-            lock_state[msg.arg] = !lock_state[msg.arg];
-            set_led(msg.arg, lock_state[msg.arg]);
+        case CMD_SET_INDICATORS:
+            lock_state[LED_CAP] = msg.arg & HID_INDICATOR_CAPS_LOCK;
+            lock_state[LED_NUM] = msg.arg & HID_INDICATOR_NUM_LOCK;
+            lock_state[LED_SCR] = msg.arg & HID_INDICATOR_SCROLL_LOCK;
+            restore_lock_states();
             break;
         }
     }
@@ -193,33 +200,20 @@ static void led_thread(void *p1, void *p2, void *p3) {
 K_THREAD_DEFINE(kinesis_leds_thread, 1024, led_thread, NULL, NULL, NULL,
                 K_LOWEST_APPLICATION_THREAD_PRIO, 0, 0);
 
-static void on_keycode_pressed(const struct zmk_keycode_state_changed *ev) {
-    if (ev->usage_page != HID_USAGE_KEY) {
-        return;
-    }
-
-    switch (ev->keycode) {
-    case HID_USAGE_KEY_KEYBOARD_F24:
-        request_battery();
-        break;
-    case HID_USAGE_KEY_KEYBOARD_CAPS_LOCK:
-        post(CMD_TOGGLE_LOCK, LED_CAP);
-        break;
-    case HID_USAGE_KEY_KEYBOARD_SCROLL_LOCK:
-        post(CMD_TOGGLE_LOCK, LED_SCR);
-        break;
-    case HID_USAGE_KEY_KEYPAD_NUM_LOCK_AND_CLEAR:
-        post(CMD_TOGGLE_LOCK, LED_NUM);
-        break;
-    }
-}
-
 static int kinesis_leds_listener(const zmk_event_t *eh) {
     const struct zmk_keycode_state_changed *key_ev = as_zmk_keycode_state_changed(eh);
     if (key_ev != NULL) {
-        if (key_ev->state) {
-            on_keycode_pressed(key_ev);
+        if (key_ev->state && key_ev->usage_page == HID_USAGE_KEY &&
+            key_ev->keycode == HID_USAGE_KEY_KEYBOARD_F24) {
+            request_battery();
         }
+        return ZMK_EV_EVENT_BUBBLE;
+    }
+
+    /* Raised when the active host sends new lock states, and on endpoint/profile switches. */
+    const struct zmk_hid_indicators_changed *ind_ev = as_zmk_hid_indicators_changed(eh);
+    if (ind_ev != NULL) {
+        post(CMD_SET_INDICATORS, ind_ev->indicators);
         return ZMK_EV_EVENT_BUBBLE;
     }
 
@@ -240,4 +234,5 @@ static int kinesis_leds_listener(const zmk_event_t *eh) {
 ZMK_LISTENER(kinesis_leds, kinesis_leds_listener);
 ZMK_SUBSCRIPTION(kinesis_leds, zmk_keycode_state_changed);
 ZMK_SUBSCRIPTION(kinesis_leds, zmk_ble_active_profile_changed);
+ZMK_SUBSCRIPTION(kinesis_leds, zmk_hid_indicators_changed);
 ZMK_SUBSCRIPTION(kinesis_leds, zmk_layer_state_changed);

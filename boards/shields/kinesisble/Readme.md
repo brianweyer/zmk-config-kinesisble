@@ -32,6 +32,9 @@ expected, since the snippet overrides the shield's console defaults.
 
 ## Indicator LEDs
 
+- Caps, Num and Scroll Lock LEDs show the lock state reported by the computer
+  you are currently typing on, and update when you switch profiles or between
+  USB and Bluetooth.
 - Battery level is shown at power-on (and so on wake, since waking from deep
   sleep restarts the board) and when F24 is pressed: one LED per 25%, or five
   blinks of the caps LED at 10% or below.
