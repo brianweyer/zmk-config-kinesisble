@@ -19,15 +19,14 @@
 #include <zephyr/sys/util.h>
 
 #include <dt-bindings/zmk/hid_indicators.h>
-#include <dt-bindings/zmk/hid_usage.h>
-#include <dt-bindings/zmk/hid_usage_pages.h>
 
 #include <zmk/battery.h>
 #include <zmk/event_manager.h>
 #include <zmk/events/ble_active_profile_changed.h>
 #include <zmk/events/hid_indicators_changed.h>
-#include <zmk/events/keycode_state_changed.h>
 #include <zmk/events/layer_state_changed.h>
+
+#include "kinesis_leds.h"
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
@@ -145,7 +144,7 @@ static void post(enum led_cmd cmd, uint8_t arg) {
     }
 }
 
-static void request_battery(void) {
+void kinesis_leds_show_battery(void) {
     if (atomic_cas(&battery_busy, 0, 1)) {
         post(CMD_SHOW_BATTERY, 0);
     }
@@ -170,7 +169,7 @@ static void led_thread(void *p1, void *p2, void *p3) {
 
     /* ZMK's deep sleep wakes via a full reset, so this also covers "show battery on wake". */
     k_msleep(BATTERY_BOOT_DELAY_MS);
-    request_battery();
+    kinesis_leds_show_battery();
 
     struct led_msg msg;
     while (true) {
@@ -201,15 +200,6 @@ K_THREAD_DEFINE(kinesis_leds_thread, 1024, led_thread, NULL, NULL, NULL,
                 K_LOWEST_APPLICATION_THREAD_PRIO, 0, 0);
 
 static int kinesis_leds_listener(const zmk_event_t *eh) {
-    const struct zmk_keycode_state_changed *key_ev = as_zmk_keycode_state_changed(eh);
-    if (key_ev != NULL) {
-        if (key_ev->state && key_ev->usage_page == HID_USAGE_KEY &&
-            key_ev->keycode == HID_USAGE_KEY_KEYBOARD_F24) {
-            request_battery();
-        }
-        return ZMK_EV_EVENT_BUBBLE;
-    }
-
     /* Raised when the active host sends new lock states, and on endpoint/profile switches. */
     const struct zmk_hid_indicators_changed *ind_ev = as_zmk_hid_indicators_changed(eh);
     if (ind_ev != NULL) {
@@ -232,7 +222,6 @@ static int kinesis_leds_listener(const zmk_event_t *eh) {
 }
 
 ZMK_LISTENER(kinesis_leds, kinesis_leds_listener);
-ZMK_SUBSCRIPTION(kinesis_leds, zmk_keycode_state_changed);
 ZMK_SUBSCRIPTION(kinesis_leds, zmk_ble_active_profile_changed);
 ZMK_SUBSCRIPTION(kinesis_leds, zmk_hid_indicators_changed);
 ZMK_SUBSCRIPTION(kinesis_leds, zmk_layer_state_changed);

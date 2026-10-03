@@ -58,6 +58,15 @@
 #include "kinesisble-pinctrl.dtsi"
 
 / {
+    behaviors {
+        // &kbat: show the battery level on the indicator LEDs
+        kbat: kinesis_battery {
+            compatible = "zmk,behavior-kinesis-battery";
+            #binding-cells = <0>;
+            display-name = "Battery Level";
+        };
+    };
+
     chosen {
         zmk,kscan = &kscan0;
         zmk,matrix_transform = &default_transform;

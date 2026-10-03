@@ -1,1 +1,2 @@
 target_sources_ifdef(CONFIG_SHIELD_KINESISBLE app PRIVATE leds/kinesis_leds.c)
+target_sources_ifdef(CONFIG_SHIELD_KINESISBLE app PRIVATE leds/behavior_kinesis_battery.c)

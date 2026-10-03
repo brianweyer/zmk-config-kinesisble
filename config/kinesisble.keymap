@@ -15,12 +15,12 @@
 
 / {
     behaviors {
-        // hold for keypress, tap to toggle layer
+        // Program key: hold to toggle a layer, tap to show the battery level
         prog_key: program_key {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             tapping-term-ms = <500>;
-            bindings = <&tog>, <&kp>;
+            bindings = <&tog>, <&kbat>;
             hold-trigger-on-release;
         };
     };
@@ -30,7 +30,7 @@
 
         default_layer {
             bindings = <
-            &kp ESC &kp F1 &kp F2 &kp F3 &kp F4 &kp F5 &kp F6 &kp F7 &kp F8 &kp F9 &kp F10 &kp F11  &kp F12 &kp PSCRN &kp SLCK &kp PAUSE_BREAK &tog NAVIGATION &prog_key ADJUSTMENT F24
+            &kp ESC &kp F1 &kp F2 &kp F3 &kp F4 &kp F5 &kp F6 &kp F7 &kp F8 &kp F9 &kp F10 &kp F11  &kp F12 &kp PSCRN &kp SLCK &kp PAUSE_BREAK &tog NAVIGATION &prog_key ADJUSTMENT 0
             &kp GRAVE &kp N1    &kp N2   &kp N3    &kp N4    &kp N5          &kp N6   &kp N7   &kp N8    &kp N9   &kp N0   &kp BACKSPACE
             &kp TAB   &kp Q     &kp W    &kp E     &kp R     &kp T           &kp Y    &kp U    &kp I     &kp O    &kp P    &kp BSLH
             &mt CLCK ESC  &kp A     &kp S    &kp D     &kp F     &kp G           &kp H    &kp J    &kp K     &kp L    &kp SEMI &kp SQT
@@ -44,7 +44,7 @@
 
         navigation_layer {
             bindings = <
-            &kp ESC &kp F1 &kp F2 &kp F3 &kp F4 &kp F5 &kp F6 &kp F7 &kp F8 &kp F9 &kp F10 &kp F11  &kp F12 &kp PSCRN &kp SLCK &kp F24 &tog 1 &trans
+            &kp ESC &kp F1 &kp F2 &kp F3 &kp F4 &kp F5 &kp F6 &kp F7 &kp F8 &kp F9 &kp F10 &kp F11  &kp F12 &kp PSCRN &kp SLCK &kbat &tog 1 &trans
             &trans  &trans  &trans    &trans   &trans  &trans                             &trans     &trans   &trans    &trans     &trans    &trans
             &trans  &trans  &trans    &kp UP   &trans  &trans                            &trans          &trans            &kp UP      &trans      &trans  &trans
             &trans  &trans  &kp LEFT  &kp DOWN  &kp RIGHT &trans                          &trans        &kp LEFT          &kp DOWN   &kp RIGHT      &trans  &trans

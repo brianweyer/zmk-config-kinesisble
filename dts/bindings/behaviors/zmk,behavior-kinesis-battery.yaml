@@ -1,0 +1,8 @@
+# Copyright (c) 2021 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: Show the battery level on the Kinesis indicator LEDs
+
+compatible: "zmk,behavior-kinesis-battery"
+
+include: zero_param.yaml
