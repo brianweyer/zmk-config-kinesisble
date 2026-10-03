@@ -1,0 +1,18 @@
+# keymap-drawer settings (https://github.com/caksoylar/keymap-drawer), used by
+# the "Draw keymaps" workflow to render keymap-drawer/*.svg.
+parse_config:
+  # Friendlier labels for custom and system behaviors
+  raw_binding_map:
+    "&kbat": "Battery"
+    "&studio_unlock": "Studio Unlock"
+    "&bootloader": "Boot loader"
+    "&sys_reset": "Reset"
+    "&out OUT_USB": "USB"
+    "&out OUT_BLE": "BLE"
+    "&out OUT_TOG": "USB/BLE"
+    "&bt BT_CLR": "BT Clear"
+    "&bt BT_SEL 0": "BT 1"
+    "&bt BT_SEL 1": "BT 2"
+    "&bt BT_SEL 2": "BT 3"
+    "&bt BT_SEL 3": "BT 4"
+    "&bt BT_SEL 4": "BT 5"

@@ -1,0 +1,25 @@
+name: Draw keymaps
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "config/*.keymap"
+      - "boards/shields/kinesisble/kinesisble.keymap"
+      - "boards/shields/kinesisble/kinesisble-layouts.dtsi"
+      - "keymap_drawer.config.yaml"
+      - ".github/workflows/draw.yml"
+
+jobs:
+  draw:
+    # Renders keymap-drawer/kinesisble.svg (personal layout) and
+    # keymap-drawer/kinesisble-stock.svg (stock layout, via the docs/ symlink)
+    # and commits them back to the branch.
+    uses: caksoylar/keymap-drawer/.github/workflows/draw-zmk.yml@v0.23.0
+    permissions:
+      contents: write
+    with:
+      keymap_patterns: "config/*.keymap docs/*.keymap"
+      draw_args: "kinesisble-stock:'-d boards/shields/kinesisble/kinesisble-layouts.dtsi'"
+      commit_message: "Update keymap drawings"
+      fail_on_error: true
